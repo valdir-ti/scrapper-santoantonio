@@ -1,5 +1,7 @@
 import json
 from selenium.webdriver.common.by import By
+from scrapper.brand import save_brand
+from scrapper.categories import save_categories
 
 def get_product_info(driver):
     script_tags = driver.find_elements("xpath", "//script[@type='application/ld+json']")
@@ -57,17 +59,21 @@ def get_specifications(driver):
 def save_product(product, images, specifications):
     # Salvar as informações na base de dados
     print("Salvando informações na base de dados...")
+    brand = product['produto']['brand'].get('name')
+    
+    brand_id = save_brand(brand)
+    print("Marca ID:", brand_id)
+
+    # categories_saved = save_categories(product['categoria']['itemListElement'])
+    # print("Categorias: ", categories_saved)
     
     # salvar as marcas
-    
     # salvar as categorias
-    
     # salvar os produtos
 
     # Exemplo de uso
-    print(product['produto'])
+    # print(product['produto'])
     print(product['categoria'])
-    print(images)
-    print(specifications)
-
-    print("Informações salvas com sucesso.")
+    # print(images)
+    # print(specifications)
+    # print("Informações salvas com sucesso.")
