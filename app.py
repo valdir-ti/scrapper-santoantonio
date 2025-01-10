@@ -1,4 +1,8 @@
+from dotenv import load_dotenv
 import json
+import os
+import requests
+from ftplib import FTP
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 
 BASE_URL = "https://www.lojasantoantonio.com.br/"
-BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/cake-box-quad-crist-ctpa-2l-165x165x8cm-6233-lsc-toys/p"
+BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/165252-chocolate-granulado-ao-leite---granule-130g-melken---harald/p"
 # BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/chiclete-mentos-pure-fresh-sabor-morango-56g---van-melle-100855/p"
 # BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/cake-box-quad-crist-ctpa-2l-165x165x8cm-6233-lsc-toys/p"
 
@@ -55,7 +59,7 @@ def get_product_info(driver):
     
     return None
 
-def get_especifications(driver):
+def get_specifications(driver):
     # Localizar filhas diretas
     child_divs = driver.find_elements(
         By.CSS_SELECTOR,
@@ -86,6 +90,69 @@ def get_especifications(driver):
         })
     return result
 
+def sanitize_filename(url, product_id, index):
+    print("sanitize => ", url)
+    """
+    Gera um nome de arquivo padronizado com base no ID do produto e no índice.
+    Exemplo: 11212313-1.jpg
+    """
+    # Extrair a extensão do arquivo (ex: .jpg, .png)
+    extension = os.path.splitext(url.split("?")[0])[-1]
+    
+    # Se não tiver extensão, adiciona .jpg por padrão
+    if not extension:
+        extension = '.jpg'
+
+    return f"{product_id}-{index}{extension}"
+
+def download_and_upload_images(image_urls, product_id, ftp_host, ftp_user, ftp_password, ftp_folder):
+    # Conectar ao servidor FTP
+    ftp = FTP(ftp_host)
+    ftp.login(user=ftp_user, passwd=ftp_password)
+    print(f"Conectado ao FTP: {ftp_host}")
+    
+    # Criar o diretório no FTP, se não existir
+    try:
+        ftp.cwd(ftp_folder)
+    except:
+        ftp.mkd(ftp_folder)
+        ftp.cwd(ftp_folder)
+    
+    # Fazer o download das imagens e enviá-las para o FTP
+    for index, url in enumerate(image_urls, start=1):
+        file_name = sanitize_filename(url, product_id, index)  # Extrair o nome do arquivo da URL
+        print(f"Baixando {url}...")
+        
+        # Baixar a imagem
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            local_file_path = os.path.join("./temp", file_name)
+            
+            # Garantir que o diretório local temporário existe
+            os.makedirs("./temp", exist_ok=True)
+            
+            # Salvar a imagem localmente
+            with open(local_file_path, 'wb') as local_file:
+                for chunk in response.iter_content(1024):
+                    local_file.write(chunk)
+            
+            print(f"{file_name} baixado. Enviando para o FTP...")
+            
+            # Enviar para o FTP
+            with open(local_file_path, 'rb') as file:
+                ftp.storbinary(f"STOR {file_name}", file)
+            
+            print(f"{file_name} enviado para o FTP.")
+            
+            # Remover o arquivo local temporário
+            os.remove(local_file_path)
+        else:
+            print(f"Erro ao baixar {url}: {response.status_code}")
+    
+    # Fechar conexão FTP
+    ftp.quit()
+    print("Conexão FTP encerrada.")
+
 def scroll_page(driver):
     for _ in range(16):  # Número de vezes que deseja rolar (10 * 100px = 1000px)
         driver.execute_script("window.scrollBy(0, 60);")
@@ -102,16 +169,27 @@ def main():
 
         product = get_product_info(driver)
         images = get_images(driver)
-        especifications = get_especifications(driver)
+        specifications = get_specifications(driver)
         
-        print(product['produto'])
-        print(product['categoria'])
-        print(images)
-        print(especifications)
+        # print(product['produto'])
+        # print(images)
+        
+        # Exemplo de uso
+        ftp_host = os.getenv('FTP_HOST')
+        ftp_user = os.getenv('FTP_USER')
+        ftp_password = os.getenv('FTP_PASS')
+        ftp_folder = "/santo-antonio/images"
+        download_and_upload_images(images, product['produto'].get('sku'), ftp_host, ftp_user, ftp_password, ftp_folder)
+        
+        # print(product['produto'])
+        # print(product['categoria'])
+        # print(images)
+        # print(specifications)
 
     finally:
         # Fechar o navegador
         driver.quit()
 
 if __name__ == "__main__":
+    load_dotenv()
     main()
