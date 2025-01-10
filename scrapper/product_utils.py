@@ -64,8 +64,8 @@ def save_product(product, images, specifications):
     brand_id = save_brand(brand)
     print("Marca ID:", brand_id)
 
-    # categories_saved = save_categories(product['categoria']['itemListElement'])
-    # print("Categorias: ", categories_saved)
+    categories_saved = save_categories(product['categoria']['itemListElement'])
+    print("Categorias: ", categories_saved)
     
     # salvar as marcas
     # salvar as categorias
@@ -73,7 +73,7 @@ def save_product(product, images, specifications):
 
     # Exemplo de uso
     # print(product['produto'])
-    print(product['categoria'])
+    print(product)
     # print(images)
     # print(specifications)
     # print("Informações salvas com sucesso.")
