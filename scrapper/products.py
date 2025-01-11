@@ -5,6 +5,7 @@ from scrapper.brands import save_brand
 from scrapper.categories import save_categories
 from scrapper.db_utils import db_connection
 from scrapper.images import save_images
+from scrapper.prices import save_prices
 from scrapper.specifications import save_specifications
 
 def get_product_info(driver):
@@ -75,6 +76,7 @@ def save_product(product, images, specifications):
     connection.close()
 
     # salvar os prices
+    save_prices(product)
 
     # Exemplo de uso
     # print(product['produto'])
