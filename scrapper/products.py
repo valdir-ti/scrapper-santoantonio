@@ -1,10 +1,10 @@
 import json
 import mysql
 from selenium.webdriver.common.by import By
-from scrapper.brand import save_brand
+from scrapper.brands import save_brand
 from scrapper.categories import save_categories
 from scrapper.db_utils import db_connection
-from scrapper.image_utils import save_images
+from scrapper.images import save_images
 from scrapper.specifications import save_specifications
 
 def get_product_info(driver):

@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 from selenium import webdriver
 from time import sleep
-from scrapper.image_utils import get_images, download_and_upload_images
-from scrapper.product_utils import get_product_info, save_product
+from scrapper.images import get_images, download_and_upload_images
+from scrapper.products import get_product_info, save_product
 from scrapper.specifications import get_specifications
 from scrapper.utils import scroll_page
 
