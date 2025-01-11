@@ -2,6 +2,7 @@ import json
 from selenium.webdriver.common.by import By
 from scrapper.brand import save_brand
 from scrapper.categories import save_categories
+from scrapper.specifications import save_specifications
 
 def get_product_info(driver):
     script_tags = driver.find_elements("xpath", "//script[@type='application/ld+json']")
@@ -25,55 +26,29 @@ def get_product_info(driver):
     
     return None
 
-def get_specifications(driver):
-    # Localizar filhas diretas
-    child_divs = driver.find_elements(
-        By.CSS_SELECTOR,
-        ".lojasantoantonio-especification-product-0-x-wrapper--product-especification.lojasantoantonio-especification-product-0-x-wrapper--product-especification--wrapper--accordion-product-image > div"
-    )
-    
-    result = []
-    
-    for div in child_divs:
-        # Obter o botão com o h2
-        try:
-            button = div.find_element(By.CSS_SELECTOR, "button")
-            h2_text = button.find_element(By.CSS_SELECTOR, "h2").text
-        except Exception as e:
-            h2_text = None
-
-        # Obter o texto do span
-        try:
-            span = div.find_element(By.CSS_SELECTOR, "span")
-            span_text = span.get_attribute("outerHTML")  # Inclui o HTML completo do span
-        except Exception as e:
-            span_text = None
-        
-        # Adicionar as informações ao resultado
-        result.append({
-            "header": h2_text,
-            "content": span_text
-        })
-    return result
-
 def save_product(product, images, specifications):
-    # Salvar as informações na base de dados
-    print("Salvando informações na base de dados...")
-    brand = product['produto']['brand'].get('name')
+    print(images)
     
+    # salvar as marcas
+    brand = product['produto']['brand'].get('name')
     brand_id = save_brand(brand)
     print("Marca ID:", brand_id)
 
+    # salvar as categorias
+    # depois de salvar o produto, salvar as essas categorias na tabela products_categories
     categories_saved = save_categories(product['categoria']['itemListElement'])
     print("Categorias: ", categories_saved)
     
-    # salvar as marcas
-    # salvar as categorias
-    # salvar os produtos
+    # salvar as especificações
+    specifications_saved = save_specifications(specifications)
+    print("Especificações: ", specifications_saved)
+    
+    # salvar as imagens
+
+    # salvar o produto
 
     # Exemplo de uso
     # print(product['produto'])
-    print(product)
     # print(images)
     # print(specifications)
-    # print("Informações salvas com sucesso.")
+    print("Informações salvas com sucesso.")
