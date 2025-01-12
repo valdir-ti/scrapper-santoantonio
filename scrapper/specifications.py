@@ -98,3 +98,85 @@ def check_if_specification_exists(header, content):
     except mysql.connector.Error as err:
         print(f"Erro ao verificar a especificação: {err}")
         return None
+
+def check_if_product_specification_exists(product_id, specification_id):
+    try:
+        connection = db_connection()
+        cursor = connection.cursor()
+
+        sql_select_product_specification = """
+            SELECT id FROM products_specifications WHERE product_id = %s AND specification_id = %s
+        """
+
+        product_specification_data = (
+            product_id,
+            specification_id,
+        )
+        cursor.execute(sql_select_product_specification, product_specification_data)
+
+        result = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        if result:
+            return result[0]
+
+        return None
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao verificar a especificação do produto: {err}")
+        return None
+
+def save_products_specifications(specifications, product_id):
+    try:
+        connection = db_connection()
+        cursor = connection.cursor()
+        
+        sql_insert_product_specification = """
+            INSERT INTO products_specifications (product_id, specification_id, created_at)
+            VALUES (%s, %s, NOW());
+        """
+        
+        for specification_id in specifications:
+            product_specification_data = (
+                product_id,
+                specification_id,
+            )
+            
+            if not check_if_product_specification_exists(product_id, specification_id):           
+                cursor.execute(sql_insert_product_specification, product_specification_data)
+            else:
+                update_product_specification(product_id, specification_id)
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except mysql.connector.Error as err:
+        print(f"Erro ao salvar a especificação do produto: {err}")
+        return None
+    
+def update_product_specification(product_id, specification_id):
+    try:
+        connection = db_connection()
+        cursor = connection.cursor()
+        
+        sql_update_product_specification = """
+            UPDATE products_specifications
+            SET updated_at = NOW()
+            WHERE product_id = %s AND specification_id = %s
+        """
+        
+        product_specification_data = (
+            product_id,
+            specification_id,
+        )
+        
+        cursor.execute(sql_update_product_specification, product_specification_data)
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except mysql.connector.Error as err:
+        print(f"Erro ao atualizar a especificação do produto: {err}")
+        return None

@@ -6,7 +6,7 @@ from scrapper.categories import save_categories
 from scrapper.db_utils import db_connection
 from scrapper.images import save_images
 from scrapper.prices import save_prices
-from scrapper.specifications import save_specifications
+from scrapper.specifications import save_products_specifications, save_specifications
 
 def get_product_info(driver):
     script_tags = driver.find_elements("xpath", "//script[@type='application/ld+json']")
@@ -77,6 +77,9 @@ def save_product(product, images, specifications):
 
     # salvar os prices
     save_prices(product)
+    
+    #salvar especificações do produto
+    save_products_specifications(specifications_saved, product['produto']['sku'])
     print("Informações salvas com sucesso.")
     
 def update_product(product, brand_id):
