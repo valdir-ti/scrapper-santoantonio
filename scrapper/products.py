@@ -2,7 +2,7 @@ import json
 import mysql
 from selenium.webdriver.common.by import By
 from scrapper.brands import save_brand
-from scrapper.categories import save_categories
+from scrapper.categories import save_categories, save_products_categories
 from scrapper.db_utils import db_connection
 from scrapper.images import save_images
 from scrapper.prices import save_prices
@@ -34,16 +34,13 @@ def save_product(product, images, specifications):
     # salvar as marcas
     brand = product['produto']['brand'].get('name')
     brand_id = save_brand(brand)
-    print("Marca ID:", brand_id)
 
     # salvar as categorias
     categories_saved = save_categories(product['categoria']['itemListElement'])
-    print("Categorias: ", categories_saved)
-
+    
     # salvar as especificações
     specifications_saved = save_specifications(specifications)
-    print("Especificações: ", specifications_saved)
-
+   
     # salvar as imagens
     save_images(images, product['produto']['sku'])
 
@@ -80,6 +77,10 @@ def save_product(product, images, specifications):
     
     #salvar especificações do produto
     save_products_specifications(specifications_saved, product['produto']['sku'])
+    
+    # salvar as categorias do produto
+    save_products_categories(categories_saved, product['produto']['sku'])
+    
     print("Informações salvas com sucesso.")
     
 def update_product(product, brand_id):

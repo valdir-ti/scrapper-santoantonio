@@ -7,8 +7,8 @@ from scrapper.specifications import get_specifications
 from scrapper.utils import scroll_page
 
 BASE_URL = "https://www.lojasantoantonio.com.br/"
-# BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/165252-chocolate-granulado-ao-leite---granule-130g-melken---harald/p"
-BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/chiclete-mentos-pure-fresh-sabor-morango-56g---van-melle-100855/p"
+BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/165252-chocolate-granulado-ao-leite---granule-130g-melken---harald/p"
+# BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/chiclete-mentos-pure-fresh-sabor-morango-56g---van-melle-100855/p"
 # BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/33614-chiclete-plutonita-gelo-40un--arcor/p"
 # BASE_URL_PRODUCT = "https://www.lojasantoantonio.com.br/cake-box-quad-crist-ctpa-2l-165x165x8cm-6233-lsc-toys/p"
 
