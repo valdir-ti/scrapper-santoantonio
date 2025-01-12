@@ -77,11 +77,6 @@ def save_product(product, images, specifications):
 
     # salvar os prices
     save_prices(product)
-
-    # Exemplo de uso
-    # print(product['produto'])
-    # print(images)
-    # print(specifications)
     print("Informações salvas com sucesso.")
     
 def update_product(product, brand_id):

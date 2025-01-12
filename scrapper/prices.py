@@ -83,10 +83,10 @@ def update_price(product):
         product_id = product['produto']['sku']
         priceValidUntilIso = product['produto']['offers']['offers'][0]['priceValidUntil']
         formatted_date = datetime.strptime(priceValidUntilIso, '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M:%S')
-        lowPrice = product['produto']['offers']['lowPrice'],
-        highPrice = product['produto']['offers']['highPrice'],
-        price = product['produto']['offers']['offers'][0]['price'],
-        priceCurrency = product['produto']['offers']['offers'][0]['priceCurrency'],
+        lowPrice = product['produto']['offers']['lowPrice']
+        highPrice = product['produto']['offers']['highPrice']
+        price = product['produto']['offers']['offers'][0]['price']
+        priceCurrency = product['produto']['offers']['offers'][0]['priceCurrency']
         
         price_data = (
             lowPrice,
