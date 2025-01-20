@@ -5,31 +5,40 @@ from ftplib import FTP
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from scrapper.db_utils import db_connection
 from scrapper.ftp_utils import connect_ftp
 from scrapper.utils import sanitize_filename
 
 def get_images(driver):
-    # Capturar o contêiner das imagens
-    swiper_wrapper = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "swiper-wrapper"))
-    )
-    swiper_slides = swiper_wrapper.find_elements(By.CLASS_NAME, "swiper-slide")
-
     # Criar uma lista para armazenar os links das imagens
     image_links = []
+    
+    try:               
+        # Capturar o contêiner das imagens
+        swiper_wrapper = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "swiper-wrapper"))
+        )
+        swiper_slides = swiper_wrapper.find_elements(By.CLASS_NAME, "swiper-slide")
 
-    # Iterar por cada slide para capturar as imagens
-    for slide in swiper_slides:
-        try:
-            # Localizar a tag <img> dentro do slide
-            img = slide.find_element(By.TAG_NAME, "img")
-            # Capturar o atributo 'src'
-            img_src = img.get_attribute("src")
-            # Adicionar o link à lista
-            image_links.append(img_src)
-        except Exception as e:
-            print(f"Erro ao capturar imagem no slide: {e}")
+        # Iterar por cada slide para capturar as imagens
+        for slide in swiper_slides:
+            try:
+                # Localizar a tag <img> dentro do slide
+                img = slide.find_element(By.TAG_NAME, "img")
+                # Capturar o atributo 'src'
+                img_src = img.get_attribute("src")
+                # Adicionar o link à lista
+                image_links.append(img_src)
+            except Exception as e:
+                print(f"Erro ao capturar imagem no slide: {e}")
+                continue
+                
+    except TimeoutException:
+        print("Nenhuma imagem encontrada na página")
+    except Exception as e:
+        print(f"Erro ao buscar imagens: {e}")
+
     return image_links
 
 def download_and_upload_images(image_urls, product_id):

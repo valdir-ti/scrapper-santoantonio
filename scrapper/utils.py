@@ -11,7 +11,7 @@ def sanitize_filename(url, product_id, index):
 
     return f"{product_id}-{index}{extension}"
 
-def scroll_page(driver):
-    for _ in range(16):  # Número de vezes que deseja rolar (10 * 100px = 1000px)
+def scroll_page(driver, range_number = 16, sleep_time = 0.5):
+    for _ in range(range_number):  # Número de vezes que deseja rolar (10 * 100px = 1000px)
         driver.execute_script("window.scrollBy(0, 60);")
-        sleep(0.5)  # Pausa de 0.5s entre os scrolls para simular comportamento humano
+        sleep(sleep_time)  # Pausa de 0.5s entre os scrolls para simular comportamento humano
